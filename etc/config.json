@@ -1,0 +1,11 @@
+{
+    "statprefix": "stats.coal.postgres",
+    "interval": 1000,
+    "dbs": [ {
+	"name": "primary",
+	"url": "postgres://postgres@10.99.99.16:5432/moray"
+    } ],
+    "targets": [ {
+        "statsd": "localhost"
+    } ]
+}

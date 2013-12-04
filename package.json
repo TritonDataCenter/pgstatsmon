@@ -1,0 +1,16 @@
+{
+        "name": "pgstatsmon",
+        "description": "Monitor postgres databases and pipe data to statsd",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/joyent/pgstatsmon.git"
+	},
+        "dependencies": {
+		"assert-plus": "0.1.5",
+		"bunyan": "0.22.1",
+		"jsprim": "0.5.1",
+                "pg": "0.7.0",
+		"statsd-client": "0.0.15",
+		"vasync": "1.4.0"
+        }
+}
