@@ -1,9 +1,8 @@
 # pgstatsmon
 
 This is a *prototype* Node service to use the Postgres client interface to
-periodically fetch stats from multiple postgres instances and shovel them to
-statsd.
-
+periodically fetch stats from multiple postgres instances and export them
+through a Prometheus server.
 
 ## Running
 

@@ -1,6 +1,6 @@
 /*
- * pgstatsmon: service that monitors Postgres stats tables and shovels data to
- * statsd.  See README.md for details.
+ * pgstatsmon: service that monitors Postgres stats tables and exposes metrics
+ * via the Prometheus format.  See README.md for details.
  */
 
 var mod_bunyan = require('bunyan');
