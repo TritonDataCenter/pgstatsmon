@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2012, Joyent, Inc. All rights reserved.
+# Copyright (c) 2017, Joyent, Inc. All rights reserved.
 #
 # Makefile: top-level Makefile
 #
