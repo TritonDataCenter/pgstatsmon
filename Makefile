@@ -17,13 +17,17 @@ JSSTYLE		 = jsstyle
 #
 # Files
 #
-JS_FILES	:= $(shell find bin etc lib -name '*.js')
-JSON_FILES      := package.json $(shell find etc -name '*.json')
+JS_FILES	:= $(shell find bin etc lib test -name '*.js')
+JSON_FILES      := package.json $(shell find etc test -name '*.json')
 JSL_FILES_NODE   = $(JS_FILES)
 JSSTYLE_FILES	 = $(JS_FILES)
 JSL_CONF_NODE	 = jsl.node.conf
+CLEAN_FILES	+= node_modules
 
 all:
 	npm install
+
+test: all
+	catest test/*.tst.js
 
 include ./Makefile.targ
