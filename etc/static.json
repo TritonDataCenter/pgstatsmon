@@ -1,0 +1,21 @@
+{
+    "interval": 10000,
+    "connections": {
+        "query_timeout": 1000,
+        "connect_timeout": 3000,
+        "connect_retries": 3
+    },
+    "static": {
+        "dbs": [{
+            "name": "primary",
+            "ip": "10.99.99.16"
+        }],
+        "backend_port": 5432,
+        "user": "moray"
+    },
+    "target": {
+        "ip": "0.0.0.0",
+        "port": 9187,
+        "route": "/metrics"
+    }
+}

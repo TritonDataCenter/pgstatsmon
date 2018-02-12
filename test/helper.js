@@ -10,6 +10,7 @@ var mod_assert = require('assert-plus');
 var mod_bunyan = require('bunyan');
 var mod_fs = require('fs');
 var mod_pg = require('pg');
+var mod_util = require('util');
 var mod_vasync = require('vasync');
 var pgstatsmon = require('../lib/pgstatsmon');
 
@@ -84,7 +85,11 @@ function getMon(args)
  */
 function createClient()
 {
-	var client = new mod_pg.Client(config.dbs[0].url);
+	var conf = config['static'];
+	var url = mod_util.format('postgresql://%s@%s:%d/%s',
+	    conf['user'], conf['dbs'][0]['ip'], conf['backend_port'],
+	    conf['user']);
+	var client = new mod_pg.Client(url);
 	client.connect(function (err) {
 		if (err) {
 			config.log.error(err, config.dbs[0], 'failed to' +

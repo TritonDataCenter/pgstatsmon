@@ -58,12 +58,19 @@ function BadQuery(callback)
 	mon_args.log = this.log;
 
 	this.mon = helper.getMon(mon_args);
-	this.prom_target = this.mon.getTarget();
 	this.client = helper.createClient();
 
-	this.mon.tick(function () {
-		clearInterval(self.mon.pm_intervalObj);
-		callback();
+	/* make sure we know when it's safe to use pgstatsmon */
+	this.mon.start(function (err) {
+		if (err) {
+			self.log.error(err, 'could not start pgstatsmon');
+			process.exit(1);
+		}
+		self.mon.tick(function () {
+			clearInterval(self.mon.pm_intervalObj);
+			callback();
+		});
+		self.prom_target = self.mon.getTarget();
 	});
 }
 
@@ -96,9 +103,9 @@ BadQuery.prototype.run_invalid_query = function (callback)
 	} ];
 
 	var labels = {
-		'query': queries[0].name
+		'query': queries[0].name,
+		'backend': self.mon.pm_pgs[0]['name']
 	};
-
 
 	this.mon.initializeMetrics(queries);
 	/*

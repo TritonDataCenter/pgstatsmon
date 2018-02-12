@@ -18,23 +18,35 @@ Then run the monitor with:
 It logs to stdout using bunyan.
 
 ## Example
+
+Using a configuration file for static backends:
 ```
 $ cat etc/myconfig.json
 {
     "interval": 10000,
-    "dbs": [ {
-        "name": "primary",
-        "url": "postgres://postgres@10.99.99.16:5432/moray"
-    } ],
+    "connections": {
+        "query_timeout": 1000,
+        "connect_timeout": 3000,
+        "connect_retries": 3
+    },
+    "static": {
+        "dbs": [{
+            "name": "primary",
+            "ip": "10.99.99.16"
+        }],
+        "backend_port": 5432,
+        "user": "moray"
+    },
     "target": {
         "ip": "0.0.0.0",
         "port": 9187,
         "route": "/metrics"
     }
 }
+
 $ node ./bin/pgstatsmon.js etc/myconfig.json > pgstatsmon.log &
 
-... wait <interval> seconds ...
+... wait <interval> milliseconds ...
 
 $ curl http://localhost:9187/metrics
 ...
@@ -61,7 +73,53 @@ pg_stat_bgwriter_checkpoint_sync_time_ms{name="primary"} 19
 ...
 ```
 
+## VMAPI Discovery
+
+pgstatsmon can optionally be configured to use VMAPI for discovery of backend
+Postgres instances. This configuration will cause pgstatsmon to poll VMAPI at
+the given interval for information about running Postgres instances.
+
+The VMAPI discovery configuration takes a number of arguments:
+* 'url' - URL or IP address of the VMAPI server
+* 'pollInterval' - rate (in milliseconds) at which to poll VMAPI
+* 'tags' - an object describing which VMs to discover
+  * 'vm_tag_name' - name of the VM tag key for Postgres VMs
+  * 'vm_tag_value' - value of the VM tag for Postgres VMs
+  * 'nic_tag_name' - NIC tag of interface to use for connecting to Postgres
+* 'backend_port' - port number used to connect to Postgres instances
+* 'user' - pgstatsmon's Postgres user
+
+Example VMAPI configuration file:
+```
+$ cat etc/vmapiconfig.json
+{
+    "interval": 10000,
+    "connections": {
+        "query_timeout": 1000,
+        "connect_timeout": 3000,
+        "connect_retries": 3
+    },
+    "vmapi": {
+        "url": "http://vmapi.coal-1.example.com",
+        "pollInterval": 600000,
+        "tags": {
+            "vm_tag_name": "manta_role",
+            "vm_tag_value": "postgres",
+            "nic_tag_name": "manta"
+        },
+        "backend_port": 5432,
+        "user": "moray"
+    },
+    "target": {
+        "ip": "0.0.0.0",
+        "port": 9187,
+        "route": "/metrics"
+    }
+}
+```
+
 ## Prometheus
+
 pgstatsmon makes metrics available in the Prometheus text format.  A user can
 issue `GET /metrics` to retrieve all of the metrics pgstatsmon collects from
 every Postgres instance being monitored.
@@ -118,6 +176,15 @@ to run the tests, your configuration file may look like this:
     }
 }
 ```
+
+## DTrace
+
+There are a number of DTrace probes built in to pgstatsmon.  The full
+listing of probes specific to pgstatsmon and their arguments can be found in
+the [lib/dtrace.js](./lib/dtrace.js) file.
+
+[node-artedi](https://github.com/joyent/node-artedi), which pgstatsmon uses to
+perform aggregation and serialize metrics, also exposes DTrace probes.
 
 ## License
 MPL-v2. See the LICENSE file.

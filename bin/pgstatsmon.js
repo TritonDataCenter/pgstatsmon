@@ -47,8 +47,9 @@ function main()
 	});
 
 	log.info('config', config);
+
 	config['log'] = log;
-	pgstatsmon(config);
+	pgstatsmon(config).start();
 }
 
 main();
