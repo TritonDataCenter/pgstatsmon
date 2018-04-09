@@ -16,7 +16,7 @@
 		"pg": "7.4.1",
 		"restify": "6.3.4",
 		"vasync": "2.2.0",
-		"vmapi-resolver": "1.0.0"
+		"vmapi-resolver": "git+ssh://git@github.com/joyent/node-vmapi-resolver#node-vmapi-resolver#1"
 	},
 	"devDependencies": {
 		"bunyan": "1.8.10",
