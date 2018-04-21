@@ -1,0 +1,28 @@
+{
+    "interval": {{SCRAPE_INTERVAL}},
+    "connections": {
+        "query_timeout": 1000,
+        "connect_timeout": 3000,
+        "connect_retries": 3
+    },
+    "user": "{{DATABASE_USER}}",
+    "database": "moray",
+    "backend_port": 5432,
+    "vmapi": {
+        "url": "http://vmapi.{{DATACENTER}}.{{DNS_DOMAIN}}",
+        "pollInterval": {{VMAPI_POLL_INTERVAL}},
+        "tags": {
+            "vm_tag_name": "{{VM_TAG_NAME}}",
+            "vm_tag_value": "{{VM_TAG_VALUE}}",
+            "nic_tag": "{{NIC_TAG}}"
+        }
+    },
+    "target": {
+        "ip": "0.0.0.0",
+        "port": 8881,
+        "route": "/metrics",
+	"metadata": {
+    		"datacenter": "{{DATACENTER}}"
+	}
+    }
+}

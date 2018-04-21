@@ -58,12 +58,40 @@ function BadQuery(callback)
 	mon_args.log = this.log;
 
 	this.mon = helper.getMon(mon_args);
-	this.prom_target = this.mon.getTarget();
 	this.client = helper.createClient();
 
-	this.mon.tick(function () {
-		clearInterval(self.mon.pm_intervalObj);
-		callback();
+	/* make sure we know when it's safe to use pgstatsmon */
+	this.mon.start(function (err) {
+		if (err) {
+			self.log.error(err, 'could not start pgstatsmon');
+			process.exit(1);
+		}
+		/*
+		 * pgstatsmon first tries to set up its backend(s) by creating
+		 * a user and some functions for that user to call. We don't
+		 * want that user because we want to do weird things that the
+		 * user pgstatsmon creates isn't allowed to do. pgstatsmon
+		 * won't run any queries against a backend if it hasn't first
+		 * tried to set up the user. This is problematic for us, since
+		 * we don't care about the setup process.
+		 *
+		 * Anyway, the setup process will fail to create the user
+		 * because the user already exists (if the directions in the
+		 * README were followed). But it takes a little while for this
+		 * to happen, so we have to sleep for just a few ms while
+		 * pgstatsmon does its thing.
+		 *
+		 * XXX Maybe we can make user creation optional, or somehow
+		 * have pgstatsmon wait to call the 'start' function's callback
+		 * until at least one backend is verified set up.
+		 */
+		setTimeout(function () {
+			self.mon.tick(function () {
+				clearInterval(self.mon.pm_intervalObj);
+				callback();
+			});
+			self.prom_target = self.mon.getTarget();
+		}, 500);
 	});
 }
 
@@ -96,9 +124,9 @@ BadQuery.prototype.run_invalid_query = function (callback)
 	} ];
 
 	var labels = {
-		'query': queries[0].name
+		'query': queries[0].name,
+		'backend': self.mon.pm_pgs[0]['name']
 	};
-
 
 	this.mon.initializeMetrics(queries);
 	/*

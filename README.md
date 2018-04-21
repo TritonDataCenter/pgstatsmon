@@ -1,6 +1,6 @@
 # pgstatsmon
 
-This is a *prototype* Node service to use the Postgres client interface to
+This is a Node.js service to use the Postgres client interface to
 periodically fetch stats from multiple Postgres instances and export them
 through a Prometheus server.
 
@@ -18,25 +18,41 @@ Then run the monitor with:
 It logs to stdout using bunyan.
 
 ## Example
+
+Using a configuration file for static backends:
 ```
 $ cat etc/myconfig.json
 {
     "interval": 10000,
-    "dbs": [ {
-        "name": "primary",
-        "url": "postgres://postgres@10.99.99.16:5432/moray"
-    } ],
+    "connections": {
+        "query_timeout": 1000,
+        "connect_timeout": 3000,
+        "connect_retries": 3
+    },
+    "backend_port": 5432,
+    "user": "pgstatsmon",
+    "database": "moray",
+    "static": {
+        "dbs": [{
+            "name": "primary",
+            "ip": "10.99.99.16"
+        }]
+    },
     "target": {
         "ip": "0.0.0.0",
-        "port": 9187,
-        "route": "/metrics"
+        "port": 8881,
+        "route": "/metrics",
+        "metadata": {
+            "datacenter": "my-dc"
+        }
     }
 }
+
 $ node ./bin/pgstatsmon.js etc/myconfig.json > pgstatsmon.log &
 
-... wait <interval> seconds ...
+... wait <interval> milliseconds ...
 
-$ curl http://localhost:9187/metrics
+$ curl -s http://localhost:8881/metrics
 ...
 # HELP pg_relation_size_toast_bytes bytes used by toast files
 # TYPE pg_relation_size_toast_bytes gauge
@@ -61,7 +77,57 @@ pg_stat_bgwriter_checkpoint_sync_time_ms{name="primary"} 19
 ...
 ```
 
+## VMAPI Discovery
+
+pgstatsmon can optionally be configured to use VMAPI for discovery of backend
+Postgres instances. This configuration will cause pgstatsmon to poll VMAPI at
+the given interval for information about running Postgres instances.
+
+The VMAPI discovery configuration takes a number of arguments:
+* 'url' - URL or IP address of the VMAPI server
+* 'pollInterval' - rate (in milliseconds) at which to poll VMAPI
+* 'tags' - an object describing which VMs to discover
+  * 'vm_tag_name' - name of the VM tag key for Postgres VMs
+  * 'vm_tag_value' - value of the VM tag for Postgres VMs
+  * 'nic_tag' - NIC tag of interface to use for connecting to Postgres
+* 'backend_port' - port number used to connect to Postgres instances
+* 'user' - pgstatsmon's Postgres user
+
+Example VMAPI configuration file:
+```
+$ cat etc/vmapiconfig.json
+{
+    "interval": 10000,
+    "connections": {
+        "query_timeout": 1000,
+        "connect_timeout": 3000,
+        "connect_retries": 3
+    },
+    "backend_port": 5432,
+    "user": "pgstatsmon",
+    "database": "moray",
+    "vmapi": {
+        "url": "http://vmapi.coal-1.example.com",
+        "pollInterval": 600000,
+        "tags": {
+            "vm_tag_name": "manta_role",
+            "vm_tag_value": "postgres",
+            "nic_tag": "manta"
+        }
+    },
+    "target": {
+        "ip": "0.0.0.0",
+        "port": 8881,
+        "route": "/metrics",
+        "metadata": {
+            "datacenter": "my-dc"
+        }
+    }
+}
+```
+
 ## Prometheus
+
 pgstatsmon makes metrics available in the Prometheus text format.  A user can
 issue `GET /metrics` to retrieve all of the metrics pgstatsmon collects from
 every Postgres instance being monitored.
@@ -107,17 +173,40 @@ to run the tests, your configuration file may look like this:
 ```
 {
     "interval": 2000,
-    "dbs": [ {
-        "name": "test",
-        "url": "postgres://pgstatsmon@localhost:5432/pgstatsmon"
-    } ],
+    "connections": {
+        "query_timeout": 1000,
+        "connect_timeout": 3000,
+        "connect_retries": 3,
+        "max_connections": 10
+    },
+    "user": "pgstatsmon",
+    "database": "pgstatsmon",
+    "backend_port": 5432,
+    "static": {
+        "dbs": [ {
+            "name": "test",
+            "ip": "127.0.0.1"
+        } ]
+    },
     "target": {
         "ip": "0.0.0.0",
-        "port": 9187,
-        "route": "/metrics"
+        "port": 8881,
+        "route": "/metrics",
+        "metadata": {
+            "datacenter": "testing-dc"
+        }
     }
 }
 ```
+
+## DTrace
+
+There are a number of DTrace probes built in to pgstatsmon.  The full
+listing of probes specific to pgstatsmon and their arguments can be found in
+the [lib/dtrace.js](./lib/dtrace.js) file.
+
+[node-artedi](https://github.com/joyent/node-artedi), which pgstatsmon uses to
+perform aggregation and serialize metrics, also exposes DTrace probes.
 
 ## License
 MPL-v2. See the LICENSE file.

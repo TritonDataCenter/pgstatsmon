@@ -1,0 +1,3 @@
+[submodule "deps/manta-scripts"]
+	path = deps/manta-scripts
+	url = https://github.com/joyent/manta-scripts
