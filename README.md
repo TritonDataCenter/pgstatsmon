@@ -17,14 +17,6 @@ Then run the monitor with:
 
 It logs to stdout using bunyan.
 
-An SMF manifest is provided in order to run pgstatsmon as an SMF service.
-
-    svccfg import ./smf/manifests/pgstatsmon.xml
-
-If run as an SMF service, stdout is redirected to the service's log directory,
-which can be found by using the `svcs` tool:
-    svcs -L pgstatsmon
-
 ## Example
 ```
 $ cat etc/myconfig.json
@@ -76,6 +68,43 @@ every Postgres instance being monitored.
 
 The listening IP address and port numbers are specified in the pgstatsmon
 configuration file.
+
+## Testing
+Automated tests can be run using the `make test` target.
+
+pgstatsmon requires a standalone Postgres instance to run functional
+tests.  The testing suite uses a configuration file that has the same format as
+the usual pgstatsmon configuration file.  There is a template configuration file
+at `./test/etc/testconfig.json`.  Each test optionally allows specifying a
+configuration file path as the first argument.  The 'make test' target will
+only use the default configuration file ('./test/etc/testconfig.json').
+
+A few things to note:
+* Do not point the tests at a production Postgres instance.  The tests will
+  create and drop tables in the given test database as they see fit.
+* The tests will connect to Postgres as the 'postgres' superuser and create
+  new users and databases for the tests.
+* Tests will generally ignore the 'interval' configuration field.  The tests
+  will instead manually kick off metric collection from the specified Postgres
+  instances when they find it necessary.  Modifying the 'interval' field won't
+  make the tests run shorter or longer.
+
+Assuming you're running your Postgres instance on the same machine you'll use
+to run the tests, your configuration file may look like this:
+```
+{
+    "interval": 2000,
+    "dbs": [ {
+        "name": "test",
+        "url": "postgres://pgstatsmon@localhost:5432/pgstatsmon"
+    } ],
+    "target": {
+        "ip": "0.0.0.0",
+        "port": 9187,
+        "route": "/metrics"
+    }
+}
+```
 
 ## License
 MPL-v2. See the LICENSE file.
