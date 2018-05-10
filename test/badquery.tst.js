@@ -20,6 +20,7 @@ var VError = require('verror').VError;
  */
 var TEST_USER = 'pgstatsmon';
 var TEST_DATABASE = 'pgstatsmon';
+
 function main()
 {
 	var badQuery;
@@ -59,10 +60,12 @@ function BadQuery(callback)
 	mon_args.log = this.log;
 
 	this.mon = helper.getMon(mon_args);
-	this.prom_target = this.mon.getTarget();
 
 	mod_vasync.pipeline({
 		'funcs': [
+			function (_, cb) {
+				self.mon.start(cb);
+			},
 			function (_, cb) {
 				helper.createUser(TEST_USER, cb);
 			},
@@ -82,6 +85,28 @@ function BadQuery(callback)
 				});
 			},
 			function (_, cb) {
+				/*
+				 * pgstatsmon first tries to set up its
+				 * backend(s) by creating a user and some
+				 * functions for that user to call. We don't
+				 * want that user because we want to do weird
+				 * things that the user pgstatsmon creates isn't
+				 * allowed to do. pgstatsmon won't run any
+				 * queries against a backend if it hasn't first
+				 * tried to set up the user.
+				 *
+				 * Anyway, it takes a little while for this
+				 * to happen so we have to sleep for just a few
+				 * ms while pgstatsmon does its thing.
+				 *
+				 * XXX Maybe we can make user creation optional,
+				 * or somehow have pgstatsmon wait to call the
+				 * 'start' function's callback until at least
+				 * one backend is verified set up.
+				 */
+				setTimeout(cb, 500);
+			},
+			function (_, cb) {
 				self.mon.tick(cb);
 			},
 			function (_, cb) {
@@ -94,6 +119,7 @@ function BadQuery(callback)
 			callback(new VError(err, 'error preparing tests'));
 			return;
 		}
+		self.prom_target = self.mon.getTarget();
 		callback();
 	});
 }
@@ -127,9 +153,9 @@ BadQuery.prototype.run_invalid_query = function (callback)
 	} ];
 
 	var labels = {
-		'query': queries[0].name
+		'query': queries[0].name,
+		'backend': self.mon.pm_pgs[0]['name']
 	};
-
 
 	this.mon.initializeMetrics(queries);
 	/*

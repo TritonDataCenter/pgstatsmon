@@ -1,3 +1,6 @@
 [submodule "deps/catest"]
 	path = deps/catest
 	url = https://github.com/joyent/catest.git
+[submodule "deps/manta-scripts"]
+	path = deps/manta-scripts
+	url = https://github.com/joyent/manta-scripts

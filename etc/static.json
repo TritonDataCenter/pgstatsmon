@@ -1,26 +1,25 @@
 {
-    "interval": 2000,
+    "interval": 10000,
     "connections": {
         "query_timeout": 1000,
         "connect_timeout": 3000,
-        "connect_retries": 3,
-        "max_connections": 10
+        "connect_retries": 3
     },
     "user": "pgstatsmon",
-    "database": "pgstatsmon",
+    "database": "moray",
     "backend_port": 5432,
     "static": {
-        "dbs": [ {
-            "name": "test",
-            "ip": "127.0.0.1"
-        } ]
+        "dbs": [{
+            "name": "primary",
+            "ip": "10.99.99.16"
+        }]
     },
     "target": {
         "ip": "0.0.0.0",
-        "port": 9187,
+        "port": 8881,
         "route": "/metrics",
 	"metadata": {
-		"datacenter": "testing-dc"
+		"datacenter": "my-coal"
 	}
     }
 }

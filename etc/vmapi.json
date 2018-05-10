@@ -1,0 +1,28 @@
+{
+    "interval": 10000,
+    "connections": {
+        "query_timeout": 1000,
+        "connect_timeout": 3000,
+        "connect_retries": 3
+    },
+    "user": "pgstatsmon",
+    "database": "moray",
+    "backend_port": 5432,
+    "vmapi": {
+        "url": "http://vmapi.coal-1.example.com",
+        "pollInterval": 600000,
+        "tags": {
+            "vm_tag_name": "manta_role",
+            "vm_tag_value": "postgres",
+            "nic_tag_name": "manta"
+        }
+    },
+    "target": {
+        "ip": "0.0.0.0",
+        "port": 8881,
+        "route": "/metrics",
+	"metadata": {
+		"datacenter": "my-triton"
+	}
+    }
+}

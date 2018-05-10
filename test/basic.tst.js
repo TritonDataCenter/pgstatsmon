@@ -71,7 +71,6 @@ function BasicTest(callback)
 
 	this.table_name = 'pgstatsmon_basic';
 	this.mon = helper.getMon(mon_args);
-	this.prom_target = this.mon.getTarget();
 
 	mod_vasync.pipeline({
 		'funcs': [
@@ -97,7 +96,16 @@ function BasicTest(callback)
 				    cb);
 			},
 			function (_, cb) {
-				self.mon.tick(cb);
+				self.mon.start(cb);
+			},
+			function (_, cb) {
+				/*
+				 * see comment in badquery.js about waiting for
+				 * pgstatsmon to create users
+				 */
+				setTimeout(function () {
+					self.mon.tick(cb);
+				}, 500);
 			}
 		]
 	}, function (err, results) {
@@ -106,6 +114,7 @@ function BasicTest(callback)
 			return;
 		}
 		clearInterval(self.mon.pm_intervalObj);
+		self.prom_target = self.mon.getTarget();
 		callback();
 	});
 }
@@ -150,7 +159,7 @@ BasicTest.prototype.check_tuple_count = function (callback)
 	var initial_value;
 	var q;
 	var labels = {
-		'name': this.mon.pm_dbs[0].name,
+		'backend': this.mon.pm_pgs[0]['name'],
 		'relname': this.table_name
 	};
 
@@ -233,7 +242,7 @@ BasicTest.prototype.check_connections = function (callback)
 	var initial_value;
 	var mclient;
 	var labels = {
-		'name': this.mon.pm_dbs[0].name,
+		'backend': this.mon.pm_pgs[0]['name'],
 		'datname': this.client.database,
 		'state': 'idle'
 	};

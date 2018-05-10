@@ -89,14 +89,14 @@ function getMon(args)
  */
 function createClient(user, database, cb)
 {
-	var url_obj = mod_url.parse(config.dbs[0].url);
-	var url_str = mod_util.format('postgres://%s@%s/%s', user, url_obj.host,
+	var ip = config['static']['dbs'][0].ip;
+	var url_str = mod_util.format('postgres://%s@%s/%s', user, ip,
 	    database);
 
 	var client = new mod_pg.Client(url_str);
 	client.connect(function (err) {
 		if (err) {
-			config.log.error(err, config.dbs[0], 'failed to' +
+			config.log.error(err, url_str, 'failed to' +
 				' create connection to backend Postgres');
 		}
 		cb(err, client);
@@ -109,9 +109,9 @@ function createClient(user, database, cb)
 function createTable(table_name, client, cb)
 {
 	if (table_name_regex.test(table_name) === false) {
-		throw new VError('invalid table name: "%s"', table_name);
+		cb(new VError('invalid table name: "%s"', table_name));
+		return;
 	}
-
 	var query = 'CREATE TABLE ' + table_name + ' (animal text, sound text)';
 	client.query(query, function (err) {
 		cb(err);
@@ -124,7 +124,8 @@ function createTable(table_name, client, cb)
 function dropTable(table_name, client, cb)
 {
 	if (table_name_regex.test(table_name) === false) {
-		throw new VError('invalid table name: "%s"', table_name);
+		cb(new VError('invalid table name: "%s"', table_name));
+		return;
 	}
 
 	var query = 'DROP TABLE IF EXISTS ' + table_name;

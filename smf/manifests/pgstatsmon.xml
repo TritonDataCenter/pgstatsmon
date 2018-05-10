@@ -1,0 +1,53 @@
+<?xml version='1.0'?>
+<!DOCTYPE service_bundle SYSTEM '/usr/share/lib/xml/dtd/service_bundle.dtd.1'>
+
+<service_bundle type='manifest' name='export'>
+    <service name='manta/application/pgstatsmon' type='service' version='0'>
+        <create_default_instance enabled='true'/>
+        <single_instance/>
+
+        <dependency name='fs'
+                    grouping='require_all'
+                    restart_on='none'
+                    type='service'>
+            <service_fmri value='svc:/system/filesystem/local'/>
+        </dependency>
+        <dependency name='net'
+                    grouping='require_all'
+                    restart_on='none'
+                    type='service'>
+            <service_fmri value='svc:/network/physical'/>
+        </dependency>
+        <dependency name="mdata"
+                    grouping="require_all"
+                    restart_on="none"
+                    type="service">
+            <service_fmri value="svc:/smartdc/mdata:execute" />
+        </dependency>
+        <dependency name="config-agent"
+                    grouping="optional_all"
+                    restart_on="none"
+                    type="service">
+            <service_fmri value="svc:/smartdc/application/config-agent" />
+        </dependency>
+
+        <exec_method name='start'
+                     type='method'
+                     exec='node --abort-on-uncaught-exception bin/pgstatsmon.js etc/config.json &amp;'
+                     timeout_seconds='10'>
+            <method_context working_directory='/opt/smartdc/pgstatsmon'>
+                <method_credential user='root' group='root'/>
+                <method_environment>
+                    <envvar name='PATH' value='/opt/smartdc/pgstatsmon/node/bin:/usr/bin:/bin:/opt/local/bin'/>
+                </method_environment>
+            </method_context>
+        </exec_method>
+
+        <exec_method name='stop'
+                     type='method'
+                     exec=':kill -TERM'
+                     timeout_seconds='60'>
+            <method_context/>
+        </exec_method>
+    </service>
+</service_bundle>
