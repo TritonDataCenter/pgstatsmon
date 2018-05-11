@@ -121,10 +121,11 @@ own set of labels that will be added in addition to whatever the user provides
 in the configuration file. Usually this includes at least the name of the
 backend that the stat came from (e.g. 2.moray.us-east.joyent.us-12345).
 
-| Table | Values | Metadata | Notes |
-|-----------------------------------|
+| Data Source | Values | Metadata | Notes |
+|-------------|--------|----------|-------|
 |pg_stat_user_tables | Information about things done on a relation. This includes number of dead tuples, number of vacuum operations, table scan counts, and more | relname| |
-|pg_stat_replication | Absolute WAL positions in bytes | sync_state | Only works on PG 9.4+ |
+|pg_stat_replication | Absolute WAL positions in bytes (mostly downstream peers)| sync_state | Only works on PG 9.4+, recovering peers return little data |
+|WAL admin functions | Absolute WAL positions in bytes (local peer only) | | Data returned varies depending on whether or not the backend is in recovery |
 |pg_stat_activity    | Connection counts | datname, state | |
 |pg_stat_database    | Information about given databases. This includes transaction counts, tuple counts, the time spent reading from and writing to disk, and more | datname | |
 |pg_class            | Size of relations in bytes | relname | |

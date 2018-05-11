@@ -195,6 +195,14 @@ the [lib/dtrace.js](./lib/dtrace.js) file.
 [node-artedi](https://github.com/joyent/node-artedi), which pgstatsmon uses to
 perform aggregation and serialize metrics, also exposes DTrace probes.
 
+There are dtrace scripts bundled with this repository in the `bin/dtrace`
+directory:
+
+* backendstat.d reports latency and errors for all of pgstatsmon's backends
+* querystat.d reports latency and errors for a given backend's queries
+* walstat.d reports WAL throughput stats for all of pgstatsmon's backends
+
+
 ## License
 MPL-v2. See the LICENSE file.
 

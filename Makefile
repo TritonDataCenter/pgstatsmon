@@ -84,8 +84,12 @@ SAPI_MANIFESTS_DIRS	= $(SAPI_MANIFESTS:%=$(PREFIX)/sapi_manifests/%)
 SMF_MANIFEST		= pgstatsmon
 SMF_MANIFEST_DIR	= $(PREFIX)/smf/manifests
 
+DTRACE_SCRIPTS		= backendstat.d querystat.d walstat.d
+DTRACE_SCRIPTS_DIR	= $(PREFIX)/bin/dtrace
+
 INSTALL_FILES	= $(addprefix $(PROTO), \
 		  $(PREFIX)/bin/pgstatsmon.js \
+		  $(DTRACE_SCRIPTS:%=$(DTRACE_SCRIPTS_DIR)/%) \
 		  $(BOOT_SCRIPTS:%=$(BOOT_SCRIPTS_DIR)/%) \
 		  $(SCRIPTS:%=$(SCRIPTS_DIR)/%) \
 		  $(LIB_FILES:%=$(PREFIX)/lib/%) \
@@ -100,6 +104,7 @@ INSTALL_FILES	= $(addprefix $(PROTO), \
 
 INSTALL_DIRS	= $(addprefix $(PROTO), \
 		  $(PREFIX)/bin \
+		  $(PREFIX)/bin/dtrace \
 		  $(PREFIX)/lib \
 		  $(PREFIX)/etc \
 		  $(SCRIPTS_DIR) \
@@ -165,8 +170,11 @@ $(GUARD):
 $(INSTALL_DIRS):
 	mkdir -p $@
 
-$(PROTO)$(PREFIX)/bin/%: bin/% | $(INSTALL_DIRS)
+$(PROTO)$(PREFIX)/bin/%.js: bin/%.js | $(INSTALL_DIRS)
 	$(INSTALL_FILE)
+
+$(PROTO)$(DTRACE_SCRIPTS_DIR)/%.d: bin/dtrace/%.d | $(INSTALL_DIRS)
+	$(INSTALL_EXEC)
 
 $(PROTO)$(PREFIX)/lib/%: lib/% | $(INSTALL_DIRS)
 	$(INSTALL_FILE)
