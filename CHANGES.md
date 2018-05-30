@@ -1,7 +1,7 @@
 # pgstatsmon Changelog
 
 ## Not yet released.
-None
+* #13 pgstatsmon could poll pg_statio_user_tables and pg_statio_user_indexes
 
 ## 1.0.0
 * #12 postgres peers could report their own WAL positions
