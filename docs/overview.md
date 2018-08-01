@@ -133,3 +133,4 @@ backend that the stat came from (e.g. 2.moray.us-east.joyent.us-12345).
 |pg_class            | Size of relations in bytes | relname | |
 |pg_class            | Distance to/from wraparound autovacuum | relname | |
 |pg_stat_bgwriter    | Information about the background writer process. This includes checkpoint stats and information about buffer activity | | | |
+| pg_stat_get_progress_info('VACUUM')  | Progress information about vacuum processes | relname | |
