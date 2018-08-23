@@ -14,7 +14,8 @@ static parameters are ignored.
 If you have a Triton installation you can instruct pgstatsmon to poll VMAPI
 for information about deployed (and running) Postgres instances. pgstatsmon
 will poll VMAPI at a user-defined interval. VMAPI VM and NIC tags must be
-provided to help pgstatsmon find the proper instances.
+provided to help pgstatsmon find the proper instances. The NIC tag is in the
+form of a regular expression.
 
 Only one VMAPI can currently be targeted. This means that if you have a three
 datacenter Triton deployment you will need to stand up three instances of
@@ -91,22 +92,20 @@ When pgstatsmon first encounters a new backend it attempts to do a few things.
 - Connects to the database as the 'postgres' user
 - Check if the database is a synchronous or asynchronous peer. If it is,
   pgstatsmon doesn't perform the rest of these steps
+- Collects the database server version number
 - Creates a non-superuser (defined in the pgstatsmon configuration file) that
   pgstatsmon will use on subsequent Postgres connection attempts
-- Creates two functions to allow pgstatsmon to glean information about Postgres
-  that is usually hidden from non-superusers
-  * get_stat_activity()
-    * Returns an unfiltered version of pg_stat_activity. When queried by a
-      non-superuser pg_stat_activity will hide queries from superusers (like
-      autovacuum operations).
-  * get_stat_replication()
-    * Returns an unfiltered version of pg_stat_replication. When queried by a
-      non-superuser pg_stat_replication will display very little information.
-      This function allows pgstatsmon to track things like WAL positions.
+- Creates functions to allow pgstatsmon to glean information about Postgres
+  that is usually hidden from non-superusers. Examples of these are
+  'get_stat_activity()' and 'get_stat_replication()'.
 
 If this initial setup operation fails for some reason, pgstatsmon will continue
 to attempt to run the setup on every metric collection 'tick' and skip metric
 collection for the backend needing to be set up.
+
+If one of the initial setup steps is known to be incompatible with certain
+PG versions it is skipped, which may result in query errors during metric
+collection.
 
 ## Metrics collected
 

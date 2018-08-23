@@ -1,6 +1,12 @@
 # pgstatsmon Changelog
 
-## Not yet released.
+## Not yet released
+None
+
+## 1.1.0
+* #18 pgstatsmon shouldn't try to create functions that depend on missing functions
+* #17 pgstatsmon should support discovering backend IPs via nic_tag regex
+* #14 Collect metrics about vacuum progress
 * #13 pgstatsmon could poll pg_statio_user_tables and pg_statio_user_indexes
 
 ## 1.0.0
