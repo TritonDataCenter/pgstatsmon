@@ -1,7 +1,10 @@
 # pgstatsmon Changelog
 
 ## Not yet released
-None
+none
+
+## 1.2.0
+* #21 allow tunable superuser for pgstatsmon setup routines
 
 ## 1.1.0
 * #18 pgstatsmon shouldn't try to create functions that depend on missing functions

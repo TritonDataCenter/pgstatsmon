@@ -89,7 +89,8 @@ pgstatsmon also logs each metric that is observed. These are available at the
 
 When pgstatsmon first encounters a new backend it attempts to do a few things.
 
-- Connects to the database as the 'postgres' user
+- Connects to the database as a superuser. The superuser's login name can be
+  specified in the config file. The default superuser is 'postgres'.
 - Check if the database is a synchronous or asynchronous peer. If it is,
   pgstatsmon doesn't perform the rest of these steps
 - Collects the database server version number

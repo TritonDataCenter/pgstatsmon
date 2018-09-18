@@ -31,6 +31,7 @@ $ cat etc/myconfig.json
     },
     "backend_port": 5432,
     "user": "pgstatsmon",
+    "superuser": "postgres",
     "database": "moray",
     "static": {
         "dbs": [{
@@ -105,6 +106,7 @@ $ cat etc/vmapiconfig.json
     },
     "backend_port": 5432,
     "user": "pgstatsmon",
+    "superuser": "postgres",
     "database": "moray",
     "vmapi": {
         "url": "http://vmapi.coal-1.example.com",
@@ -167,6 +169,7 @@ to run the tests, your configuration file may look like this:
         "max_connections": 10
     },
     "user": "pgstatsmon",
+    "superuser": "postgres",
     "database": "pgstatsmon",
     "backend_port": 5432,
     "static": {

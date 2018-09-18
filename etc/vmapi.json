@@ -6,6 +6,7 @@
         "connect_retries": 3
     },
     "user": "pgstatsmon",
+    "superuser": "postgres",
     "database": "moray",
     "backend_port": 5432,
     "vmapi": {
