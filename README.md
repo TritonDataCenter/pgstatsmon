@@ -202,6 +202,10 @@ directory:
 * querystat.d reports latency and errors for a given backend's queries
 * walstat.d reports WAL throughput stats for all of pgstatsmon's backends
 
+## Documentation
+
+The [docs](./docs) directory contains documents describing how pgstatsmon works
+in more detail.
 
 ## License
 MPL-v2. See the LICENSE file.
