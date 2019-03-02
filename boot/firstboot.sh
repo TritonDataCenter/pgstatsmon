@@ -6,7 +6,7 @@
 #
 
 #
-# Copyright (c) 2018, Joyent, Inc.
+# Copyright (c) 2019, Joyent, Inc.
 #
 
 printf '==> firstboot @ %s\n' "$(date -u +%FT%TZ)"
@@ -20,6 +20,7 @@ NAME=pgstatsmon
 #
 
 SVC_ROOT="/opt/smartdc/$NAME"
+METRICPORTS_SVC='metric-ports-updater'
 
 #
 # Build PATH from this list of directories.  This PATH will be used both in the
@@ -72,11 +73,18 @@ w
 EDSCRIPT
 
 #
+# Import the metric-ports-updater SMF service.
+#
+if ! svccfg import "/opt/smartdc/$NAME/smf/manifests/$METRICPORTS_SVC.xml"; then
+	fatal "could not import $METRICPORTS_SVC SMF service"
+fi
+
+#
 # Import the pgstatsmon SMF service.  The manifest file creates the service
 # enabled by default.
 #
 if ! svccfg import "/opt/smartdc/$NAME/smf/manifests/$NAME.xml"; then
-	fatal 'could not import SMF service'
+	fatal "could not import $NAME SMF service"
 fi
 
 manta_common_setup_end

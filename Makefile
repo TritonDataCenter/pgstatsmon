@@ -81,8 +81,11 @@ NODE_BITS_DIR	= $(PREFIX)/node
 SAPI_MANIFESTS		= pgstatsmon
 SAPI_MANIFESTS_DIRS	= $(SAPI_MANIFESTS:%=$(PREFIX)/sapi_manifests/%)
 
-SMF_MANIFEST		= pgstatsmon
+SMF_MANIFESTS		= pgstatsmon metric-ports-updater
+SMF_METHODS		= metric-ports-updater
+
 SMF_MANIFEST_DIR	= $(PREFIX)/smf/manifests
+SMF_METHOD_DIR		= $(PREFIX)/smf/methods
 
 DTRACE_SCRIPTS		= backendstat.d querystat.d walstat.d
 DTRACE_SCRIPTS_DIR	= $(PREFIX)/bin/dtrace
@@ -99,7 +102,8 @@ INSTALL_FILES	= $(addprefix $(PROTO), \
 		  $(BOOT_SCRIPTS:%=$(BOOT_SCRIPTS_DIR)/%) \
 		  $(SAPI_MANIFESTS_DIRS:%=%/template) \
 		  $(SAPI_MANIFESTS_DIRS:%=%/manifest.json) \
-		  $(SMF_MANIFEST:%=$(SMF_MANIFEST_DIR)/%.xml) \
+		  $(SMF_MANIFESTS:%=$(SMF_MANIFEST_DIR)/%.xml) \
+		  $(SMF_METHODS:%=$(SMF_METHOD_DIR)/%.sh) \
 		  )
 
 INSTALL_DIRS	= $(addprefix $(PROTO), \
@@ -113,6 +117,7 @@ INSTALL_DIRS	= $(addprefix $(PROTO), \
 		  $(NODE_BITS_DIR)/lib \
 		  $(BOOT_SCRIPTS_DIR) \
 		  $(SMF_MANIFEST_DIR) \
+		  $(SMF_METHOD_DIR) \
 		  $(SAPI_MANIFESTS_DIRS) \
 		  )
 
@@ -215,6 +220,10 @@ $(PROTO)$(PREFIX)/sapi_manifests/%: sapi_manifests/% | $(INSTALL_DIRS)
 
 # install SMF manifests
 $(PROTO)$(PREFIX)/smf/manifests/%: smf/manifests/% | $(INSTALL_DIRS)
+	$(INSTALL_FILE)
+
+# install SMF methods
+$(PROTO)$(PREFIX)/smf/methods/%: smf/methods/% | $(INSTALL_DIRS)
 	$(INSTALL_FILE)
 
 include ./tools/mk/Makefile.targ
