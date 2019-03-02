@@ -6,20 +6,21 @@
 #
 
 #
-# Copyright (c) 2018, Joyent, Inc.
+# Copyright (c) 2019, Joyent, Inc.
 #
 
-printf '==> firstboot @ %s\n' "$(date -u +%FT%TZ)"
+printf "==> firstboot @ %s\n" "$(date -u +%FT%TZ)"
 
 set -o xtrace
 
-NAME=pgstatsmon
+NAME="pgstatsmon"
 
 #
 # Runs on first boot of a newly reprovisioned "pgstatsmon" zone.
 #
 
 SVC_ROOT="/opt/smartdc/$NAME"
+METRICPORTS_SVC="metric-ports-updater"
 
 #
 # Build PATH from this list of directories.  This PATH will be used both in the
@@ -40,7 +41,7 @@ paths=(
 PATH=
 for (( i = 0; i < ${#paths[@]}; i++ )); do
 	if (( i > 0 )); then
-		PATH+=':'
+		PATH+=":"
 	fi
 	PATH+="${paths[$i]}"
 done
@@ -61,8 +62,8 @@ manta_common_setup "$NAME"
 # Replace the contents of PATH from the default root user .bashrc with one
 # more appropriate for this particular zone.
 #
-if ! /usr/bin/ed -s '/root/.bashrc'; then
-	fatal 'could not modify .bashrc'
+if ! /usr/bin/ed -s "/root/.bashrc"; then
+	fatal "could not modify .bashrc"
 fi <<EDSCRIPT
 /export PATH/d
 a
@@ -72,11 +73,18 @@ w
 EDSCRIPT
 
 #
+# Import the metric-ports-updater SMF service.
+#
+if ! svccfg import "/opt/smartdc/$NAME/smf/manifests/$METRICPORTS_SVC.xml"; then
+	fatal "could not import $METRICPORTS_SVC SMF service"
+fi
+
+#
 # Import the pgstatsmon SMF service.  The manifest file creates the service
 # enabled by default.
 #
 if ! svccfg import "/opt/smartdc/$NAME/smf/manifests/$NAME.xml"; then
-	fatal 'could not import SMF service'
+	fatal "could not import $NAME SMF service"
 fi
 
 manta_common_setup_end
