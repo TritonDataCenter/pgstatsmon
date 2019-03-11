@@ -12,15 +12,13 @@
 # Tools must be installed on the path
 #
 
-JSL	= jsl
-JSSTYLE	= jsstyle
 CATEST	= deps/catest/catest
 
 #
 # Variables
 #
 
-NAME	:= pgstatsmon
+NAME	= pgstatsmon
 
 #
 # Prebuilt Node.js
@@ -48,9 +46,14 @@ GUARD			 = test/.not_production
 DEFAULT_TEST_CONFIG	 = test/etc/testconfig.json
 TEST_BACKEND_URL	:= $(shell json -f $(DEFAULT_TEST_CONFIG) static.dbs | json -a ip)
 
-include ./tools/mk/Makefile.defs
-include ./tools/mk/Makefile.node_modules.defs
-include ./tools/mk/Makefile.node_prebuilt.defs
+ENGBLD_USE_BUILDIMAGE	= true
+ENGBLD_REQUIRE		:= $(shell git submodule update --init deps/eng)
+include ./deps/eng/tools/mk/Makefile.defs
+TOP ?= $(error Unable to access eng.git submodule Makefiles.)
+
+include ./deps/eng/tools/mk/Makefile.node_modules.defs
+include ./deps/eng/tools/mk/Makefile.node_prebuilt.defs
+include ./deps/eng/tools/mk/Makefile.agent_prebuilt.defs
 
 #
 # Install macros and targets
@@ -60,7 +63,7 @@ PROTO			= proto
 PREFIX			= /opt/smartdc/$(NAME)
 LIB_FILES		= $(notdir $(wildcard lib/*.js))
 ETC_FILES		= $(notdir $(wildcard etc/*.json))
-RELEASE_TARBALL		= $(NAME)-pkg-$(STAMP).tar.bz2
+RELEASE_TARBALL		= $(NAME)-pkg-$(STAMP).tar.gz
 NODE_MODULE_INSTALL	= $(PREFIX)/node_modules/.ok
 
 SCRIPTS		= firstboot.sh \
@@ -124,33 +127,34 @@ INSTALL_DIRS	= $(addprefix $(PROTO), \
 INSTALL_FILE = rm -f $@ && cp $< $@ && chmod 644 $@
 INSTALL_EXEC = rm -f $@ && cp $< $@ && chmod 755 $@
 
+BASE_IMAGE_UUID = 04a48d7d-6bb5-4e83-8c3b-e60a99e0f48f
+BUILDIMAGE_NAME = manta-pgstatsmon
+BUILDIMAGE_DESC	= Postgres Monitoring Service
+AGENTS		= amon config registrar
+
 #
 # build targets
 #
 
 .PHONY: all
-all: $(STAMP_NODE_PREBUILT) $(STAMP_NODE_MODULES)
+all: $(STAMP_NODE_PREBUILT) $(STAMP_NODE_MODULES) deps/manta-scripts/.git
 	$(NODE) --version
 
 .PHONY: install
 install: $(INSTALL_FILES)
 
 .PHONY: release
-release: install
+release: all install
 	@echo "==> Building $(RELEASE_TARBALL)"
-	cd $(PROTO) && gtar -jcf $(TOP)/$(RELEASE_TARBALL) \
+	cd $(PROTO) && gtar -I pigz -cf $(TOP)/$(RELEASE_TARBALL) \
 		--transform='s,^[^.],root/&,' \
 		--owner=0 --group=0 \
 		opt
 
 .PHONY: publish
 publish: release
-	@if [[ -z "$(BITS_DIR)" ]]; then \
-		echo "error: 'BITS_DIR' must be set for 'publish' target"; \
-		exit 1; \
-	fi
-	mkdir -p $(BITS_DIR)/$(NAME)
-	cp $(RELEASE_TARBALL) $(BITS_DIR)/$(NAME)/$(RELEASE_TARBALL)
+	mkdir -p $(ENGBLD_BITS_DIR)/$(NAME)
+	cp $(RELEASE_TARBALL) $(ENGBLD_BITS_DIR)/$(NAME)/$(RELEASE_TARBALL)
 
 .PHONY: test
 test: $(GUARD) all
@@ -208,7 +212,7 @@ $(PROTO)$(BOOT_SCRIPTS_DIR)/setup.sh: | $(INSTALL_DIRS)
 $(PROTO)$(BOOT_SCRIPTS_DIR)/configure.sh: | $(INSTALL_DIRS)
 	rm -f $@ && ln -s ../$(NAME)/scripts/everyboot.sh $@
 
-$(PROTO)$(PREFIX)/scripts/%.sh: deps/manta-scripts/%.sh | $(INSTALL_DIRS)
+$(PROTO)$(PREFIX)/scripts/%.sh: deps/manta-scripts/%.sh | $(INSTALL_DIRS) deps/manta-scripts/.git
 	$(INSTALL_EXEC)
 
 $(PROTO)$(PREFIX)/scripts/%.sh: boot/%.sh | $(INSTALL_DIRS)
@@ -226,6 +230,8 @@ $(PROTO)$(PREFIX)/smf/manifests/%: smf/manifests/% | $(INSTALL_DIRS)
 $(PROTO)$(PREFIX)/smf/methods/%: smf/methods/% | $(INSTALL_DIRS)
 	$(INSTALL_FILE)
 
-include ./tools/mk/Makefile.targ
-include ./tools/mk/Makefile.node_modules.targ
-include ./tools/mk/Makefile.node_prebuilt.targ
+include ./deps/eng/tools/mk/Makefile.deps
+include ./deps/eng/tools/mk/Makefile.targ
+include ./deps/eng/tools/mk/Makefile.node_modules.targ
+include ./deps/eng/tools/mk/Makefile.node_prebuilt.targ
+include ./deps/eng/tools/mk/Makefile.agent_prebuilt.targ

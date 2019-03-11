@@ -1,2 +1,7 @@
+/make_stamps
+/bits
+/build
 node_modules
 test/.not_production
+pgstatsmon-pkg-*.gz
+/proto
