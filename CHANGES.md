@@ -1,7 +1,7 @@
 # pgstatsmon Changelog
 
 ## Not yet released
-None
+* #24 track vacuum start time
 
 ## 1.1.0
 * #18 pgstatsmon shouldn't try to create functions that depend on missing functions
