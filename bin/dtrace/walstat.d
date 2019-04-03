@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 /*
@@ -44,11 +44,15 @@
 
 BEGIN
 {
+	do_print = 0;
+	self->prev["unused", "val"] = 10; /* Initialize an associative array. */
 	printf("waiting for tick...\n");
 }
 
-artedi*:::counter-add
-/copyinstr(arg0) == "pg_stat_replication_wal_sent_bytes"/
+artedi*:::gauge-set
+/
+copyinstr(arg0) == "pg_stat_replication_wal_sent_bytes"
+/
 {
 	labels = copyinstr(arg2);
 	backend = json(labels, "backend");
@@ -56,11 +60,16 @@ artedi*:::counter-add
 	sync_state = json(labels, "sync_state");
 	zone = substr(backend, strlen(backend) - 8);
 
-	@sent[shard, zone, sync_state] = sum(arg1);
+	diff = arg1 - self->prev[zone, "sent"];
+
+	@sent[shard, zone, sync_state] = sum(diff);
+	self->prev[zone, "sent"] = arg1;
 }
 
-artedi*:::counter-add
-/copyinstr(arg0) == "pg_stat_replication_replica_wal_written_bytes"/
+artedi*:::gauge-set
+/
+copyinstr(arg0) == "pg_stat_replication_replica_wal_written_bytes"
+/
 {
 	labels = copyinstr(arg2);
 	backend = json(labels, "backend");
@@ -68,11 +77,16 @@ artedi*:::counter-add
 	sync_state = json(labels, "sync_state");
 	zone = substr(backend, strlen(backend) - 8);
 
-	@written[shard, zone, sync_state] = sum(arg1);
+	diff = arg1 - self->prev[zone, "write"];
+
+	@written[shard, zone, sync_state] = sum(diff);
+	self->prev[zone, "write"] = arg1;
 }
 
-artedi*:::counter-add
-/copyinstr(arg0) == "pg_stat_replication_replica_wal_flushed_bytes"/
+artedi*:::gauge-set
+/
+copyinstr(arg0) == "pg_stat_replication_replica_wal_flushed_bytes"
+/
 {
 	labels = copyinstr(arg2);
 	backend = json(labels, "backend");
@@ -80,10 +94,13 @@ artedi*:::counter-add
 	sync_state = json(labels, "sync_state");
 	zone = substr(backend, strlen(backend) - 8);
 
-	@flushed[shard, zone, sync_state] = sum(arg1);
+	diff = arg1 - self->prev[zone, "flush"];
+
+	@flushed[shard, zone, sync_state] = sum(diff);
+	self->prev[zone, "flush"] = arg1;
 }
 
-artedi*:::counter-add
+artedi*:::gauge-set
 /copyinstr(arg0) == "pg_stat_replication_replica_wal_replayed_bytes"/
 {
 	labels = copyinstr(arg2);
@@ -92,10 +109,15 @@ artedi*:::counter-add
 	sync_state = json(labels, "sync_state");
 	zone = substr(backend, strlen(backend) - 8);
 
-	@replayed[shard, zone, sync_state] = sum(arg1);
+	diff = arg1 - self->prev[zone, "replayed"];
+
+	@replayed[shard, zone, sync_state] = sum(diff);
+	self->prev[zone, "replayed"] = arg1;
 }
 
+
 pgstatsmon*:::tick-done
+/do_print/
 {
 	/* headers */
 	printf("%30s %40s\n", "----- CLUSTER STATE -----",
@@ -109,6 +131,18 @@ pgstatsmon*:::tick-done
 	    @sent, @written, @flushed, @replayed);
 
 	printf("\n");
+
+	clear(@sent);
+	clear(@written);
+	clear(@flushed);
+	clear(@replayed);
+}
+
+/* Enable printing after the first tick. */
+pgstatsmon*:::tick-done
+/do_print == 0/
+{
+	do_print = 1;
 
 	clear(@sent);
 	clear(@written);

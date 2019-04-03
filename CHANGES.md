@@ -3,6 +3,13 @@
 ## Not yet released
 * #24 track vacuum start time
 
+## 2.0.0
+* #23 Negative byte lag calculated from pgstatsmon metrics after shard rebuild
+  - This is a breaking change since pgstatsmon now returns gauges instead of
+    counters for the pg_stat_replication table data. This also moves pgstatsmon
+    to node-artedi 2.0.0, which includes a breaking histogram bucket change.
+    See [docs/migrating.md](./docs/migrating.md) for more information.
+
 ## 1.1.0
 * #18 pgstatsmon shouldn't try to create functions that depend on missing functions
 * #17 pgstatsmon should support discovering backend IPs via nic_tag regex
