@@ -144,20 +144,21 @@ BadQuery.prototype.run_invalid_query = function (callback)
 
 	/* bogus query that causes Postgres to return an error */
 	queries = [ {
-		'name': 'test_bad_query',
-		'sql': 'SELECT *',
-		'statkey': 'non_existent',
-		'metadata': [ 'no_metadata' ],
-		'counters': [],
-		'gauges': []
+		'q_name': 'test_bad_query',
+		'q_sql': 'SELECT *',
+		'q_statkey': 'non_existent',
+		'q_metadata': [ 'no_metadata' ],
+		'q_counters': [],
+		'q_gauges': []
 	} ];
 
 	var labels = {
-		'query': queries[0].name,
+		'query': queries[0].q_name,
 		'backend': self.mon.pm_pgs[0]['name']
 	};
 
-	this.mon.initializeMetrics(queries);
+	this.mon.start();
+
 	/*
 	 * since mon.initializeMetrics() drops all of the data, we need to get
 	 * a pointer to the new PrometheusTarget
@@ -166,6 +167,15 @@ BadQuery.prototype.run_invalid_query = function (callback)
 
 	mod_vasync.pipeline({
 		'funcs': [
+			function (_, cb) {
+				setTimeout(function () {
+					cb();
+				}, 500);
+			},
+			function (_, cb) {
+				self.mon.pm_pools[0].queries = queries;
+				cb();
+			},
 			/* make sure counters are created */
 			function (_, cb) {
 				self.mon.tick(cb);
