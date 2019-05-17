@@ -1,6 +1,8 @@
 # pgstatsmon Changelog
 
 ## Not yet released
+* #26 vacuum progress function should use SETOF
+* #25 distinguish between vacuum and vacuum to prevent wraparound
 * #24 track vacuum start time
 
 ## 1.1.0
