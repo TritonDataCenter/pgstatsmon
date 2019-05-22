@@ -1,4 +1,12 @@
 /*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Copyright (c) 2019, Joyent, Inc.
+ */
+
+/*
  * test/validate_queries.tst.js
  *
  * Tests to ensure the query schema defined in lib/queries.js validates the type
@@ -111,5 +119,3 @@ tests.forEach(function (t) {
 
 	mod_assertplus.equal((validator.errors || []).length, t.expected.nerrors);
 });
-
-console.log(new Date());

@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 var helper = require('./helper');
@@ -107,9 +107,6 @@ function BadQuery(callback)
 				setTimeout(cb, 500);
 			},
 			function (_, cb) {
-				self.mon.tick(cb);
-			},
-			function (_, cb) {
 				clearInterval(self.mon.pm_intervalObj);
 				cb();
 			}
@@ -157,8 +154,6 @@ BadQuery.prototype.run_invalid_query = function (callback)
 		'backend': self.mon.pm_pgs[0]['name']
 	};
 
-	this.mon.start();
-
 	/*
 	 * since mon.initializeMetrics() drops all of the data, we need to get
 	 * a pointer to the new PrometheusTarget
@@ -167,11 +162,6 @@ BadQuery.prototype.run_invalid_query = function (callback)
 
 	mod_vasync.pipeline({
 		'funcs': [
-			function (_, cb) {
-				setTimeout(function () {
-					cb();
-				}, 500);
-			},
 			function (_, cb) {
 				self.mon.pm_pools[0].queries = queries;
 				cb();
