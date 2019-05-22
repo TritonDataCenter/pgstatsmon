@@ -117,5 +117,6 @@ tests.forEach(function (t) {
 	var validator = mod_ajv({ 'allErrors': true });
 	validator.validate(lib_queries._schema, t.queries);
 
-	mod_assertplus.equal((validator.errors || []).length, t.expected.nerrors);
+	mod_assertplus.equal((validator.errors || []).length,
+	    t.expected.nerrors);
 });
