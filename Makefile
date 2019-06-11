@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019, Joyent, Inc. All rights reserved.
+# Copyright 2019 Joyent, Inc.
 #
 # Makefile: pgstatsmon - Postgres monitoring system
 #
@@ -54,6 +54,7 @@ TOP ?= $(error Unable to access eng.git submodule Makefiles.)
 include ./deps/eng/tools/mk/Makefile.node_modules.defs
 include ./deps/eng/tools/mk/Makefile.node_prebuilt.defs
 include ./deps/eng/tools/mk/Makefile.agent_prebuilt.defs
+include ./deps/eng/tools/mk/Makefile.smf.defs
 
 #
 # Install macros and targets
@@ -84,7 +85,8 @@ NODE_BITS_DIR	= $(PREFIX)/node
 SAPI_MANIFESTS		= pgstatsmon
 SAPI_MANIFESTS_DIRS	= $(SAPI_MANIFESTS:%=$(PREFIX)/sapi_manifests/%)
 
-SMF_MANIFESTS		= pgstatsmon metric-ports-updater
+SMF_MANIFEST_NAMES	= pgstatsmon metric-ports-updater
+SMF_MANIFESTS		= $(SMF_MANIFEST_NAMES:%=smf/manifests/%.xml)
 SMF_METHODS		= metric-ports-updater
 
 SMF_MANIFEST_DIR	= $(PREFIX)/smf/manifests
@@ -105,7 +107,7 @@ INSTALL_FILES	= $(addprefix $(PROTO), \
 		  $(BOOT_SCRIPTS:%=$(BOOT_SCRIPTS_DIR)/%) \
 		  $(SAPI_MANIFESTS_DIRS:%=%/template) \
 		  $(SAPI_MANIFESTS_DIRS:%=%/manifest.json) \
-		  $(SMF_MANIFESTS:%=$(SMF_MANIFEST_DIR)/%.xml) \
+		  $(SMF_MANIFESTS:%=$(PREFIX)/%) \
 		  $(SMF_METHODS:%=$(SMF_METHOD_DIR)/%.sh) \
 		  )
 
@@ -235,3 +237,4 @@ include ./deps/eng/tools/mk/Makefile.targ
 include ./deps/eng/tools/mk/Makefile.node_modules.targ
 include ./deps/eng/tools/mk/Makefile.node_prebuilt.targ
 include ./deps/eng/tools/mk/Makefile.agent_prebuilt.targ
+include ./deps/eng/tools/mk/Makefile.smf.targ
