@@ -107,6 +107,9 @@ function BadQuery(callback)
 				setTimeout(cb, 500);
 			},
 			function (_, cb) {
+				self.mon.tick(cb);
+			},
+			function (_, cb) {
 				clearInterval(self.mon.pm_intervalObj);
 				cb();
 			}
@@ -154,18 +157,16 @@ BadQuery.prototype.run_invalid_query = function (callback)
 		'backend': self.mon.pm_pgs[0]['name']
 	};
 
+	this.mon.initializeMetrics();
 	/*
 	 * since mon.initializeMetrics() drops all of the data, we need to get
 	 * a pointer to the new PrometheusTarget
 	 */
 	self.prom_target = this.mon.getTarget();
+	self.mon.pm_pgs[0].queries = queries;
 
 	mod_vasync.pipeline({
 		'funcs': [
-			function (_, cb) {
-				self.mon.pm_pools[0].queries = queries;
-				cb();
-			},
 			/* make sure counters are created */
 			function (_, cb) {
 				self.mon.tick(cb);
