@@ -111,6 +111,17 @@ var tests = [ {
     'expected': {
 	'nerrors': 0
     }
+}, {
+    'queries': [ {
+	'name': 'test_query',
+	'versionToSql': {
+	    '1.1': 'select 1;'
+	},
+	'statkey': 'testing'
+    } ],
+    'expected': {
+	'nerrors': 5
+    }
 } ];
 
 tests.forEach(function (t) {
