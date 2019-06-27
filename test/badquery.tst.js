@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright (c) 2019 Joyent, Inc.
  */
 
 var helper = require('./helper');
@@ -144,25 +144,26 @@ BadQuery.prototype.run_invalid_query = function (callback)
 
 	/* bogus query that causes Postgres to return an error */
 	queries = [ {
-		'name': 'test_bad_query',
-		'sql': 'SELECT *',
-		'statkey': 'non_existent',
-		'metadata': [ 'no_metadata' ],
-		'counters': [],
-		'gauges': []
+		'q_name': 'test_bad_query',
+		'q_sql': 'SELECT *',
+		'q_statkey': 'non_existent',
+		'q_metadata': [ 'no_metadata' ],
+		'q_counters': [],
+		'q_gauges': []
 	} ];
 
 	var labels = {
-		'query': queries[0].name,
+		'query': queries[0].q_name,
 		'backend': self.mon.pm_pgs[0]['name']
 	};
 
-	this.mon.initializeMetrics(queries);
+	this.mon.initializeMetrics();
 	/*
 	 * since mon.initializeMetrics() drops all of the data, we need to get
 	 * a pointer to the new PrometheusTarget
 	 */
 	self.prom_target = this.mon.getTarget();
+	self.mon.pm_pgs[0].queries = queries;
 
 	mod_vasync.pipeline({
 		'funcs': [

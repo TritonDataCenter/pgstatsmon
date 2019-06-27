@@ -133,3 +133,22 @@ backend that the stat came from (e.g. 2.moray.us-east.joyent.us-12345).
 |pg_class            | Distance to/from wraparound autovacuum | relname | |
 |pg_stat_bgwriter    | Information about the background writer process. This includes checkpoint stats and information about buffer activity | | | |
 | pg_stat_get_progress_info('VACUUM')  | Progress information about vacuum processes | relname | |
+
+An instance of pgstatsmon may run a different number of queries to each
+backend/database depending on the version reported by that database.  pgstatsmon
+queries the backend for its "server_version_num" setting, which is the integer
+representation of the running version of PG.  A given query has a set of SQL
+strings that are keyed to either:
+
+- The minimum version of PG that a particular SQL string is supported against
+  as a string in the same format as "server_version_num".
+- The string "all", to denote that this query is expected to run against all
+  versions of PG.
+
+For example, the "pg_stat_replication" queries are only supported in PG 9.4+,
+so these queries are not executed against a database that is reporting a version
+lower than this.  The lowest version that lib/queries.js uses for this case is
+`90400`, so a server reporting `90204` would not run this particular query.
+
+To determine how many queries are being executed, the "pg_query_count" metric
+is exposed for each backend.
