@@ -6,7 +6,6 @@
         "connect_retries": 3
     },
     "user": "{{DATABASE_USER}}",
-    "database": "moray",
     "backend_port": 5432,
     "vmapi": {
         "url": "http://vmapi.{{DATACENTER}}.{{DNS_DOMAIN}}",
