@@ -13,7 +13,7 @@
         "pollInterval": 600000,
         "tags": {
             "vm_tag_name": "manta_role",
-            "vm_tag_value": "postgres",
+            "vm_tag_value": "*postgres",
             "nic_tag_name": "manta"
         }
     },
