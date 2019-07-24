@@ -6,6 +6,7 @@
         "connect_retries": 3
     },
     "user": "{{DATABASE_USER}}",
+    "database": "moray",
     "backend_port": 5432,
     "vmapi": {
         "url": "http://vmapi.{{DATACENTER}}.{{DNS_DOMAIN}}",
@@ -15,6 +16,13 @@
             "vm_tag_value": "{{VM_TAG_VALUE}}",
             "nic_tag": "{{NIC_TAG}}"
         }
+    },
+    "roles": {
+        {{#each VM_ROLES}}
+            "{{name}}": {
+                "database": "{{database}}"
+            }{{^if last}},{{/if}}
+        {{/each}}
     },
     "target": {
         "ip": "0.0.0.0",

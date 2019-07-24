@@ -13,7 +13,15 @@
         "tags": {
             "vm_tag_name": "manta_role",
             "vm_tag_value": "*postgres",
-            "nic_tag_name": "manta"
+            "nic_tag": "manta"
+        }
+    },
+    "roles": {
+        "buckets-postgres": {
+            "database": "boray"
+        },
+        "postgres": {
+            "database": "moray"
         }
     },
     "target": {
