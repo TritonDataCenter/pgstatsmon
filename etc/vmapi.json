@@ -6,6 +6,7 @@
         "connect_retries": 3
     },
     "user": "pgstatsmon",
+    "database": "moray",
     "backend_port": 5432,
     "vmapi": {
         "url": "http://vmapi.coal-1.example.com",
