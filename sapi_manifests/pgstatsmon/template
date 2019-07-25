@@ -18,11 +18,11 @@
         }
     },
     "roles": {
-        {{#each VM_ROLES}}
+        {{#VM_ROLES}}
             "{{name}}": {
                 "database": "{{database}}"
-            }{{^if last}},{{/if}}
-        {{/each}}
+            }{{^last}},{{/last}}
+        {{/VM_ROLES}}
     },
     "target": {
         "ip": "0.0.0.0",
