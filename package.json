@@ -18,7 +18,7 @@
 		"restify": "6.3.4",
 		"vasync": "2.2.0",
 		"verror": "1.10.0",
-		"vmapi-resolver": "2.0.0"
+		"vmapi-resolver": "git+https://github.com/chudley/node-vmapi-resolver.git#tags"
 	},
 	"author": "Joyent, Inc",
 	"license": "MPL-2.0"
