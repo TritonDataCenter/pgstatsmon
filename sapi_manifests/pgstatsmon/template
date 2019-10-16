@@ -17,6 +17,13 @@
             "nic_tag": "{{NIC_TAG}}"
         }
     },
+    "roles": {
+        {{#VM_ROLES}}
+            "{{name}}": {
+                "database": "{{database}}"
+            }{{^last}},{{/last}}
+        {{/VM_ROLES}}
+    },
     "target": {
         "ip": "0.0.0.0",
         "port": 8881,
