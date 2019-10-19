@@ -209,7 +209,3 @@ in more detail.
 
 ## License
 MPL-v2. See the LICENSE file.
-
-## Contributing
-Contributions should be made via the [Joyent Gerrit](https://cr.joyent.us).
-See the CONTRIBUTING file.
