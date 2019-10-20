@@ -1,11 +1,6 @@
 # Contributing to pgstatsmon
 
-This repository uses [cr.joyent.us](https://cr.joyent.us) (Gerrit) for new
-changes.  Anyone can submit changes.  To get started, see the [cr.joyent.us user
-guide](https://github.com/joyent/joyent-gerrit/blob/master/docs/user/README.md).
-This repo does not use GitHub pull requests.
-
-You must submit a GitHub issue before submitting a change for code review.
+This repository uses GitHub pull requests for code review.
 
 See the [Joyent Engineering
 Guidelines](https://github.com/joyent/eng/blob/master/docs/index.md) for general
