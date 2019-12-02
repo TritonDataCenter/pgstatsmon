@@ -130,7 +130,7 @@ INSTALL_FILE = rm -f $@ && cp $< $@ && chmod 644 $@
 INSTALL_EXEC = rm -f $@ && cp $< $@ && chmod 755 $@
 
 BASE_IMAGE_UUID = 04a48d7d-6bb5-4e83-8c3b-e60a99e0f48f
-BUILDIMAGE_NAME = mantav1-pgstatsmon
+BUILDIMAGE_NAME = mantav2-pgstatsmon
 BUILDIMAGE_DESC	= Postgres Monitoring Service
 AGENTS		= amon config registrar
 
