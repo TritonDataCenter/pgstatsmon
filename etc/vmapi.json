@@ -19,7 +19,7 @@
     },
     "roles": {
         "buckets-postgres": {
-            "database": "boray"
+            "database": "buckets_metadata"
         },
         "postgres": {
             "database": "moray"
