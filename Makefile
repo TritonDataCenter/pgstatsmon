@@ -1,5 +1,13 @@
 #
-# Copyright 2019 Joyent, Inc.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+#
+# Copyright 2020 Joyent, Inc.
+#
+
 #
 # Makefile: pgstatsmon - Postgres monitoring system
 #
@@ -133,6 +141,9 @@ BASE_IMAGE_UUID = 04a48d7d-6bb5-4e83-8c3b-e60a99e0f48f
 BUILDIMAGE_NAME = mantav1-pgstatsmon
 BUILDIMAGE_DESC	= Postgres Monitoring Service
 AGENTS		= amon config registrar
+
+# For mantav1, specify the branch to compare copyrights with
+ENGBLD_CHECK_COPYRIGHT_ARGS = -b mantav1
 
 #
 # build targets
