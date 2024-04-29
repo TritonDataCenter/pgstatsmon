@@ -8,8 +8,8 @@ through a Prometheus server.
 
 There are currently two active branches of this repository, for the two
 active major versions of Manta. See the [mantav2 overview
-document](https://github.com/joyent/manta/blob/master/docs/mantav2.md) for
-details on major Manta versions.
+document](https://github.com/TritonDataCenter/manta/blob/master/docs/mantav2.md)
+for details on major Manta versions.
 
 - [`master`](../../tree/master/) - For development of mantav2, the latest
   version of Manta.
@@ -204,8 +204,9 @@ There are a number of DTrace probes built in to pgstatsmon.  The full
 listing of probes specific to pgstatsmon and their arguments can be found in
 the [lib/dtrace.js](./lib/dtrace.js) file.
 
-[node-artedi](https://github.com/joyent/node-artedi), which pgstatsmon uses to
-perform aggregation and serialize metrics, also exposes DTrace probes.
+[node-artedi](https://github.com/TritonDataCenter/node-artedi), which
+pgstatsmon uses to perform aggregation and serialize metrics, also exposes
+DTrace probes.
 
 There are dtrace scripts bundled with this repository in the `bin/dtrace`
 directory:
