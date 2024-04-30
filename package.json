@@ -3,7 +3,7 @@
 	"description": "Monitor Postgres databases",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/joyent/pgstatsmon.git"
+		"url": "https://github.com/TritonDataCenter/pgstatsmon.git"
 	},
 	"dependencies": {
 		"ajv": "5.5.1",
@@ -20,6 +20,6 @@
 		"verror": "1.10.0",
 		"vmapi-resolver": "2.1.0"
 	},
-	"author": "Joyent, Inc",
+	"author": "MNX Cloud (mnx.io)",
 	"license": "MPL-2.0"
 }

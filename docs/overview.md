@@ -23,8 +23,8 @@ pgstatsmon to collect metrics from the Postgres instances in the three
 datacenters.
 
 The VMAPI-based service discovery mechanism uses
-[node-vmapi-resolver](https://github.com/joyent/node-vmapi-resolver) to poll
-VMAPI.
+[node-vmapi-resolver](https://github.com/TritonDataCenter/node-vmapi-resolver)
+to poll VMAPI.
 
 ### Static discovery
 
@@ -35,8 +35,8 @@ discovery method.
 
 ## Connection management
 
-pgstatsmon uses [node-cueball](https://github.com/joyent/node-cueball) to
-manage connection to Postgres. pgstatsmon creates a cueball connection pool
+pgstatsmon uses [node-cueball](https://github.com/TritonDataCenter/node-cueball)
+to manage connection to Postgres. pgstatsmon creates a cueball connection pool
 with only one connection for each Postgres backend. Cueball will ensure that
 connections are destroyed when backends disappear temporarily, and that only one
 connection is maintained for each backend.
@@ -68,7 +68,7 @@ During each polling interval the following occurs:
   * Any query error results in logging and incrementing of error metrics
 
 Metrics are maintained in memory using
-[node-artedi](https://github.com/joyent/node-artedi).
+[node-artedi](https://github.com/TritonDataCenter/node-artedi).
 
 ## Metric retrieval
 
