@@ -24,9 +24,9 @@ NAME	= pgstatsmon
 # Prebuilt Node.js
 #
 
-NODE_PREBUILT_TAG	= gz
-NODE_PREBUILT_IMAGE	= 18b094b0-eb01-11e5-80c1-175dac7ddf02
-NODE_PREBUILT_VERSION	= v4.8.7
+# minimal-64-lts 24.4.1
+NODE_PREBUILT_IMAGE	= 41bd4100-eb86-409a-85b0-e649aadf6f62
+NODE_PREBUILT_VERSION	= v18.20.6
 
 #
 # Files
@@ -50,6 +50,8 @@ ENGBLD_USE_BUILDIMAGE	= true
 ENGBLD_REQUIRE		:= $(shell git submodule update --init deps/eng)
 include ./deps/eng/tools/mk/Makefile.defs
 TOP ?= $(error Unable to access eng.git submodule Makefiles.)
+
+BUILD_PLATFORM  = 20210826T002459Z
 
 include ./deps/eng/tools/mk/Makefile.node_modules.defs
 include ./deps/eng/tools/mk/Makefile.node_prebuilt.defs
@@ -129,7 +131,8 @@ INSTALL_DIRS	= $(addprefix $(PROTO), \
 INSTALL_FILE = rm -f $@ && cp $< $@ && chmod 644 $@
 INSTALL_EXEC = rm -f $@ && cp $< $@ && chmod 755 $@
 
-BASE_IMAGE_UUID = 04a48d7d-6bb5-4e83-8c3b-e60a99e0f48f
+#  triton-origin-x86_64-24.4.1
+BASE_IMAGE_UUID = 4dd8810e-10a8-49d1-b37b-1c4e32ed6c05
 BUILDIMAGE_NAME = mantav2-pgstatsmon
 BUILDIMAGE_DESC	= Postgres Monitoring Service
 AGENTS		= amon config registrar
