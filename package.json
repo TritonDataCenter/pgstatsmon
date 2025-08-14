@@ -15,11 +15,12 @@
 		"dtrace-provider": "0.8.6",
 		"jsprim": "2.0.0",
 		"pg": "7.4.1",
+		"pgpass": "1.0.2",
 		"restify": "6.3.4",
 		"vasync": "2.2.0",
 		"verror": "1.10.0",
 		"vmapi-resolver": "2.1.0"
 	},
-	"author": "MNX Cloud (mnx.io)",
+	"author": "Edgecast Cloud (edgecast.io)",
 	"license": "MPL-2.0"
 }
