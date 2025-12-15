@@ -1,7 +1,7 @@
 {
     "interval": {{SCRAPE_INTERVAL}},
     "connections": {
-        "query_timeout": 1000,
+        "query_timeout": {{QUERY_TIMEOUT}},
         "connect_timeout": 3000,
         "connect_retries": 3
     },
